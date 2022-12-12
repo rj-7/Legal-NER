@@ -29,6 +29,7 @@ def convert_biluo_scheme(data, nlp):
     for sentence, _, entities in data:
         doc = nlp(sentence)
         biluo_tags = offsets_to_biluo_tags(doc, entities)
+        biluo_tags = ['O' if x == '-' else x for x in biluo_tags]
         bio_tags = biluo_to_iob(biluo_tags)
         biluo_labels.append(biluo_tags)
         bio_labels.append(bio_tags)
@@ -36,6 +37,8 @@ def convert_biluo_scheme(data, nlp):
 
 def encode_label_ids(labels):
     unique_labels = set(labels)
-    labels_to_ids = {k: v for v, k in enumerate(sorted(unique_labels))}
-    ids_to_labels = {v: k for v, k in enumerate(sorted(unique_labels))}
+    labels_to_ids = {k: v for v, k in enumerate(sorted(unique_labels),1)}
+    ids_to_labels = {v: k for v, k in enumerate(sorted(unique_labels),1)}
+    labels_to_ids["<PAD>"] = 0
+    ids_to_labels[0] = ["<PAD>"]
     return labels_to_ids, ids_to_labels
